@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="JavaScript, WebRTC" />
+  <meta name="description" content="WebRTC codelab" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+  <title>Join Room</title>
+  <style>
+    body {
+      background-color: white;
+      margin-top: 15px;
+    }
+
+    video {
+      background: #4169E1;
+      border-radius: 15px;
+    }
+
+    .page {
+      display: block;
+      margin: 0 auto;
+    }
+
+    #localVideo {
+      width: 160px;
+      height: 120px;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+
+    #remoteVideo {
+      width: 320px;
+      height: 240px;
+    }
+
+    .hide {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="login-page" class="page">
+    <button id="login">Login</button>
+    <h2>User Name</h2>
+    <input type="text" id="username"/>
+    <h2>Room Name</h2>
+    <input type="text" id="roomname"/>
+    <button id="join">Enter Room</button>
+    <textarea id="textarea" rows="10" cols="30"></textarea>
+
+    <button id="rooms">Show Rooms</button>
+    <button id="call">Show Remote Video</button>
+  </div>
+
+  <div id="call-page" class="page">
+    <video id="localVideo" autoplay controls muted="muted"></video>
+    <video id="remoteVideo" autoplay controls></video>
+    <button id="hangup">Hang Up</button>
+  </div>
+
+  <script src='webRTCSocket.js'></script>
+  <script src='webRTCAdapter.js'></script>
+  <script src='webRTCClient.js'></script>
+  <script>
+    var roomsButton = document.querySelector('#rooms');
+    var textarea = document.querySelector('#textarea');
+
+    roomsButton.addEventListener('click', function(event) {
+      webRTCSocket.send({
+        type: "rooms"
+      });
+    });
+
+    function onDefault(response) {
+      textarea.value = response.value;
+    }
+  </script>
+</body>
+
+</html>
