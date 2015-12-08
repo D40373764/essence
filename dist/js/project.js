@@ -115,7 +115,7 @@ ReactDOM.render(
                 <BtnItem
                   classes={'raised e-background-blue-A200'}
                   onClick={onCallClick}
-                  label='Start'/>
+                  label='Call'/>
               </Block>
             </ListItem>
             <ListItem>
@@ -128,6 +128,7 @@ ReactDOM.render(
             </ListItem>
             <ListItem>
               <Block type='li'>
+                <Input>
                 <InputItem
                   id="username"
                   classes={'e-input-group has-success'}
@@ -137,10 +138,6 @@ ReactDOM.render(
                   placeholder='User Name'
                 >
                 </InputItem>
-              </Block>
-            </ListItem>
-            <ListItem>
-              <Block type='li'>
                 <InputItem
                   id="roomname"
                   classes={'e-input-group has-success'}
@@ -150,6 +147,21 @@ ReactDOM.render(
                   placeholder='Room Name'
                 >
                 </InputItem>
+                <InputItem
+                  id="message"
+                  classes={'e-input-group has-success'}
+                  inputClasses={'e-input empty'}
+                  type='text'
+                  name='label'
+                  placeholder='Message'
+                >
+                </InputItem>
+                </Input>
+                <BtnItem
+                  id="sendButton"
+                  classes={'raised e-background-blue-A200'}
+                  onClick={onSendClick}
+                  label='Send Message'/>
               </Block>
             </ListItem>
           </List>
@@ -229,6 +241,8 @@ ReactDOM.render(
               </CardItemFooter>
             </CardItem>
           </Card>
+          <div id='received'>
+          </div>
         </Block>
 
       </Block>

@@ -18,10 +18,37 @@ function WebRTC(localVideo, remoteVideo, socket) {
   this.roomname       = undefined;
   this.stream         = undefined;
   this.peerConnection = undefined;
+  this.sendDataChannel    = undefined;
+  this.receiveDataChannel = undefined;
   this.iceServers     = [{ "url": "stun:127.0.0.1:9876" }];
-  this.constraints    = { audio: true, video: true };
+  this.constraints    = { audio: false, video: true };
   this.socket         = socket;
   var parent          = this;
+
+  this.createDataChannel = function(received) {
+    var dataChannelOptions = [{
+      RtpDataChannels: true
+    }];
+
+    var sendDataChannel = parent.peerConnection.createDataChannel("sendDataChannel", dataChannelOptions);
+
+    sendDataChannel.onerror = function(error) {
+      console.log("Data Channel Error: " + error);
+    }
+
+    sendDataChannel.onmessage = function(event) {
+      console.log("Data Channel message: " + event.data);
+      received.innerHTML += "recv: " + event.data + "<br/>";
+      received.scrollTop = received.scrollHeight;
+    }
+
+    sendDataChannel.onopen  = onSendDataChannelStateChange
+    sendDataChannel.onclose = onSendDataChannelStateChange;
+
+    parent.sendDataChannel = sendDataChannel;
+
+    console.log("Send Data Channel is ready");
+  }
 
   this.startConnection = function() {
 
@@ -60,15 +87,15 @@ function WebRTC(localVideo, remoteVideo, socket) {
       "iceServers": parent.iceServers
     };
 
-    parent.peerConnection = new RTCPeerConnection(configuration);
-    parent.peerConnection.addStream(stream);
+    var peerConnection = new RTCPeerConnection(configuration);
+    peerConnection.addStream(stream);
 
-    parent.peerConnection.onaddstream = function(e) {
+    peerConnection.onaddstream = function(e) {
       parent.remoteVideo.src = window.URL.createObjectURL(e.stream);
     }
 
     // Setup ice handling
-    parent.peerConnection.onicecandidate = function(event) {
+    peerConnection.onicecandidate = function(event) {
       if (event.candidate) {
         parent.socket.send({
           type: "candidate",
@@ -76,6 +103,21 @@ function WebRTC(localVideo, remoteVideo, socket) {
         });
       }
     }
+
+    peerConnection.ondatachannel = function(event) {
+      console.log('Receive Channel Callback');
+      var receiveDataChannel = event.channel;
+      receiveDataChannel.onmessage = onReceiveMessageCallback;
+      receiveDataChannel.onopen = onReceiveDataChannelStateChange;
+      receiveDataChannel.onclose = onReceiveDataChannelStateChange;
+      parent.receiveDataChannel = receiveDataChannel;
+    }
+
+    parent.peerConnection = peerConnection;
+
+    var received = document.querySelector('#received');
+    parent.createDataChannel(received);
+
   }
 
   this.closePeerConnection = function() {
@@ -108,4 +150,21 @@ function onAnswer(response) {
 
 function onCandidate(response) {
   webRTC.peerConnection.addIceCandidate(new RTCIceCandidate(response.candidate));
+}
+
+function onReceiveMessageCallback(event) {
+  console.log("Received message: " + event.data);
+  var received = document.querySelector('#received');
+  received.innerHTML += "recv: " + event.data + "<br/>";
+  received.scrollTop = received.scrollHeight;
+}
+
+function onReceiveDataChannelStateChange() {
+  var readyState = webRTC.receiveDataChannel.readyState;
+  console.log('Data channel state is: ' + readyState);
+}
+
+function onSendDataChannelStateChange() {
+  var readyState = webRTC.sendDataChannel.readyState;
+  console.log('Data channel state is: ' + readyState);
 }

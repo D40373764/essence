@@ -43,13 +43,26 @@ var onCallClick = function(event) {
   webRTC.startPeerConnection();
 }
 
+// var onDataChannelClick = function(event) {
+//   var received = document.querySelector('#received');
+//   webRTC.createDataChannel(received);
+// }
+
 var onHangupClick = function(event) {
-  var usernameInput = document.querySelector('#username');
   webRTCSocket.send({
     type: "leave"
   });
 
   onLeave();
+}
+
+var onSendClick = function(event) {
+  var received = document.querySelector('#received');
+  var messageInput = document.querySelector('#message');
+  var val = messageInput.value;
+  received.innerHTML += "send: " + val + "<br/>";
+  received.scrollTop = received.scrollHeight;
+  webRTC.sendDataChannel.send(val);
 }
 
 // Implements WebRTCSocket callbacks
