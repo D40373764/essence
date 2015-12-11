@@ -23,3 +23,19 @@ body {
 button i {
   font-size: 32px;
 }
+
+.hide {
+  display: none;
+}
+
+progress[value] {
+  width: 450px;
+  height: 20px;
+  background-color: #32CD32;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+video {
+  margin:0 auto;
+}

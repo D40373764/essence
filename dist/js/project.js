@@ -122,9 +122,8 @@ var LoginBox = React.createClass({
             onClick={this.getRooms}
             tooltipText='Show online users'
             />
-
-          <ul id="roomlist">
-          </ul>
+          <div id="roomlist">
+          </div>
         </span>
       </div>
     );
@@ -182,18 +181,18 @@ var FileBox = React.createClass({
   render: function() {
     return (
       <div className="box">
-        <Block type='li'>
-          <input type="file" id="files" name="file" />
-        </Block>
-        <Block type='li'>
-          <BtnItem
-            classes={'raised e-background-blue-A200'}
-            onClick={this.onSendFileClick}
-            label='Send File'/>
-        </Block>
-        <Block type='li'>
+        <input type="file" id="files" name="file" />
+        <BtnItem
+          classes={'raised e-background-blue-A200'}
+          onClick={this.onSendFileClick}
+          label='Send File'/>
+        <div>
           <a id="download"></a>
-        </Block>
+        </div>
+        <div className="progress">
+          <div className="label">Send progress: </div>
+          <progress id="sendProgress" max="0" value="0"></progress>
+        </div>
       </div>
     );
   }
@@ -219,12 +218,17 @@ var VideoCard = React.createClass({
     console.log("startTalk");
     window.webRTC.startPeerConnection();
   },
+  hangup: function(event) {
+    console.log("Hang Up");
+    webRTCSocket.send({ type: "leave" });
+    location.reload();
+  },
   render: function() {
     return (
       <Card>
         <CardItem>
-          <CardItemContent classes={"card-supporting-text e-text-blue-grey-400"}>
-            <video id={this.props.id} autoPlay controls></video>
+          <CardItemContent classes={"e-center"}>
+            <video className='e-img-rsp' id={this.props.id} autoPlay controls width={this.props.width} height={this.props.height}></video>
           </CardItemContent>
 
           <CardItemFooter>
@@ -241,6 +245,7 @@ var VideoCard = React.createClass({
             </Block>
             <Block type="div" classes={"e-left"}>
               <BtnItem
+                onClick={this.hangup}
                 icon='communication-call-end'
                 classes={''}
                 label='No'
@@ -271,11 +276,11 @@ ReactDOM.render(
 ReactDOM.render(
     <Block type='div'>
       <Block classes={"e-row"}>
-        <Block classes={"brick brick-9"}>
-          <VideoCard id="remoteVideo" width="240px"/>
+        <Block classes={"brick brick-8"}>
+          <VideoCard id="remoteVideo" width="600" height="300"/>
         </Block>
-        <Block classes={"brick brick-3"}>
-          <VideoCard id="localVideo" width="200px"/>
+        <Block classes={"brick brick-4"}>
+          <VideoCard id="localVideo" width="250" height="150"/>
         </Block>
 
       </Block>

@@ -7,48 +7,19 @@ window.webRTCSocket = new WebRTCSocket();
 var url = 'wss://d40373764.dvuadmin.net:8443'; //work
 //var url           = 'ws://192.168.1.6:8888'; //home
 
-// var onLoginClick = function(event) {
-//   webRTCSocket.connect(url, function() {
-//     console.log("Ready to create room.");
-//   });
-//
-//   var localVideo = document.querySelector('#localVideo');
-//   var remoteVideo = document.querySelector('#remoteVideo');
-//   webRTC = new WebRTC(localVideo, remoteVideo, webRTCSocket);
-// }
-
-// var onLoginClick = function(event) {
-//   webRTCSocket.connect(url, function() {
-//     console.log("Ready to create room.");
-//
-//     var username = document.querySelector('#username').value;
-//     var localVideo = document.querySelector('#localVideo');
-//     var remoteVideo = document.querySelector('#remoteVideo');
-//     webRTC = new WebRTC(localVideo, remoteVideo, webRTCSocket);
-//     webRTCSocket.createRoom(username, roomname);
-//
-//   });
-
-//}
-// var onCreateClick = function(event) {
-//   var usernameInput = document.querySelector('#username');
-//   var roomnameInput = document.querySelector('#roomname');
-//
-//   var username = usernameInput.value;
-//   var roomname = roomnameInput.value;
-//
-//   if (username.length > 0 && roomname.length > 0) {
-//     webRTCSocket.createRoom(username, roomname);
-//   }
-// }
-
 function showRooms(response) {
   console.log(response);
   if (response.value.length === 0) {
     alert("No no in onlone.");
     return;
   }
-  var ul = document.querySelector('#roomlist');
+  var roomListDiv = document.querySelector('#roomlist');
+  if (roomListDiv.firstChild !== null) {
+    roomListDiv.firstChild.remove();
+  }
+
+  var ul = document.createElement('ul');
+
   var ids = response.value;
   for (index in ids) {
     var li = document.createElement('li');
@@ -61,6 +32,8 @@ function showRooms(response) {
     li.appendChild(button);
     ul.appendChild(li);
   }
+
+  roomListDiv.appendChild(ul);
 }
 
 window.onJoinClick = function(callerID) {
@@ -79,16 +52,6 @@ var onHangupClick = function(event) {
 
   onLeave();
 }
-
-// var onSendMessageClick = function(event) {
-//   var received = document.querySelector('#received');
-//   var messageInput = document.querySelector('#message');
-//   var val = messageInput.value;
-//   var message = {type:'message', data:val};
-//   received.innerHTML += "send: " + val + "<br/>";
-//   received.scrollTop = received.scrollHeight;
-//   webRTC.sendDataChannel.send(JSON.stringify(message));
-// }
 
 var onSendFileClick = function(event) {
   var files = document.querySelector('#files').files;
@@ -124,39 +87,15 @@ function onJoin(response) {
 }
 
 function onLeave() {
-  remoteVideo.src = null;
-  webRTC.closePeerConnection();
+  location.reload();
+  // remoteVideo.src = null;
+  // webRTC.closePeerConnection();
 }
 
 function onError(response) {
   alert(response.message);
 }
 
-
-// function sendFile(file) {
-//   var reader = new FileReader();
-//   reader.onerror = function(e) {
-//     console.log("onerror");
-//   };
-//   reader.onprogress = updateProgress;
-//
-//   reader.onabort = function(e) {
-//     alert('File read cancelled');
-//   };
-//   reader.onloadstart = function(e) {
-//     console.log("onloadstar");
-//     //document.getElementById('progress_bar').className = 'loading';
-//   };
-//   reader.onload = function(e) {
-//     console.log("onload is done?");
-//
-//     // Ensure that the progress bar displays 100% at the end.
-//     // progress.style.width = '100%';
-//     // progress.textContent = '100%';
-//     // setTimeout("document.getElementById('progress_bar').className='';", 2000);
-//   }
-//   reader.readAsArrayBuffer(file);
-// }
 
 function updateProgress(evt) {
   // evt is an ProgressEvent.
@@ -172,8 +111,10 @@ function updateProgress(evt) {
   }
 }
 
+
 //To do
 function sendFile(file) {
+  var sendProgress = document.querySelector('progress#sendProgress');
   console.log('file is ' + [file.name, file.size, file.type, file.lastModifiedDate].join(' '));
 
   // Handle 0 size files.
@@ -183,7 +124,8 @@ function sendFile(file) {
     console.log("Content is empty");
     return;
   }
-  //sendProgress.max = file.size;
+
+  sendProgress.max = file.size;
   //receiveProgress.max = file.size;
   var chunkSize = 16384;
   var sliceFile = function(offset) {
@@ -195,10 +137,9 @@ function sendFile(file) {
         if (file.size > offset + e.target.result.byteLength) {
           window.setTimeout(sliceFile, 0, offset + chunkSize);
         }
-        //sendProgress.value = offset + e.target.result.byteLength;
+        sendProgress.value = offset + e.target.result.byteLength;
       };
     })(file);
-
     var slice = file.slice(offset, offset + chunkSize);
     reader.readAsArrayBuffer(slice);
   };
@@ -211,13 +152,19 @@ window.fileInfo = {};
 var receiveBuffer = [];
 var receivedSize = 0;
 var downloadAnchor = document.querySelector('a#download');
+var sendProgress = undefined;
 
 function onReceiveFileCallback(data) {
+  if (sendProgress === undefined) {
+    sendProgress = document.querySelector('progress#sendProgress');
+    sendProgress.max = fileInfo.size;
+  }
+
   // trace('Received Message ' + event.data.byteLength);
   receiveBuffer.push(data);
   receivedSize += data.byteLength;
 
-  //receiveProgress.value = receivedSize;
+  sendProgress.value = receivedSize;
 
   // we are assuming that our signaling protocol told
   // about the expected file size (and name, hash, etc).
@@ -234,5 +181,6 @@ function onReceiveFileCallback(data) {
 
     receivedSize = 0;
     window.fileInfo = {};
+    sendProgress.hide();
   }
 }

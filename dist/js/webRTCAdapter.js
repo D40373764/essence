@@ -12,8 +12,8 @@ function hasRTCPeerConnection() {
 }
 
 function WebRTC(localVideo, remoteVideo, socket) {
-  this.localVideo     = localVideo; // document.querySelector('#localVideo');
-  this.remoteVideo    = remoteVideo; //document.querySelector('#remoteVideo');
+  this.localVideo     = localVideo;
+  this.remoteVideo    = remoteVideo;
   this.username       = undefined;
   this.roomname       = undefined;
   this.stream         = undefined;
