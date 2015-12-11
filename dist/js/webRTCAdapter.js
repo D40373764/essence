@@ -21,7 +21,7 @@ function WebRTC(localVideo, remoteVideo, socket) {
   this.sendDataChannel    = undefined;
   this.receiveDataChannel = undefined;
   this.iceServers     = [{ "url": "stun:127.0.0.1:9876" }];
-  this.constraints    = { audio: false, video: true };
+  this.constraints    = { audio: true, video: true };
   this.socket         = socket;
   var parent          = this;
 
@@ -153,10 +153,24 @@ function onCandidate(response) {
 }
 
 function onReceiveMessageCallback(event) {
-  console.log("Received message: " + event.data);
-  var received = document.querySelector('#received');
-  received.innerHTML += "recv: " + event.data + "<br/>";
-  received.scrollTop = received.scrollHeight;
+  if (Object.keys(window.fileInfo).length === 0) {
+    console.log("Received message: " + event.data);
+    var message = JSON.parse(event.data);
+    switch (message.type) {
+      case 'message':
+        var received = document.querySelector('#received');
+        received.innerHTML += "recv: " + message.data + "<br/>";
+        received.scrollTop = received.scrollHeight;
+        break;
+      case 'file':
+        window.fileInfo = message.data;
+        break;
+      default:
+    }
+  }
+  else {
+    onReceiveFileCallback(event.data);
+  }
 }
 
 function onReceiveDataChannelStateChange() {

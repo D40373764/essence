@@ -1,3 +1,25 @@
 body {
   /* your css stylings */
 }
+
+.box {
+  width: 100%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+.box input {
+  border: 0;
+  border-bottom: 1px solid gray;
+  outline: none;
+}
+.box input:hover {
+  border-bottom: 1px solid #008B8B;
+}
+
+#message {
+  width: 90%;
+}
+
+button i {
+  font-size: 32px;
+}

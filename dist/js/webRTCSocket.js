@@ -21,6 +21,8 @@ function WebRTCSocket() {
 
       switch(data.type) {
         case 'login':
+          parent.username = data.username;
+          parent.roomname = data.roomname;
           onLogin(data);
           break;
         case 'join':
@@ -41,6 +43,9 @@ function WebRTCSocket() {
         case 'error':
           onError(data);
           break;
+        case 'rooms':
+          showRooms(data);
+          break;
         default:
           onDefault(data);
       }
@@ -53,15 +58,13 @@ function WebRTCSocket() {
     parent.socket = socket;
   };
 
-  this.createRoom = function(username, roomname) {
+  this.createRoom = function(username) {
     parent.send({
       type: "login",
       username: username,
-      roomname: roomname
     });
 
     parent.username = username;
-    parent.roomname = roomname;
   };
 
   this.joinRoom = function(username, roomname) {
