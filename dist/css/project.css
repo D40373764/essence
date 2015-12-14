@@ -1,5 +1,6 @@
 body {
   /* your css stylings */
+  background-color: #F5F5F5
 }
 
 .box {
@@ -11,6 +12,8 @@ body {
   border: 0;
   border-bottom: 1px solid gray;
   outline: none;
+  font-size: 1.5em;
+  font-weight: 100;
 }
 .box input:hover {
   border-bottom: 1px solid #008B8B;

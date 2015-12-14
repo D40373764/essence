@@ -4,8 +4,8 @@ function hasFileApi() {
 
 window.webRTCSocket = new WebRTCSocket();
 
-var url = 'wss://d40373764.dvuadmin.net:8443'; //work
-//var url           = 'ws://192.168.1.6:8888'; //home
+//var url = 'wss://d40373764.dvuadmin.net:8443'; //work
+var url = 'wss://192.168.1.6:8443'; //home
 
 function showRooms(response) {
   console.log(response);
@@ -181,6 +181,5 @@ function onReceiveFileCallback(data) {
 
     receivedSize = 0;
     window.fileInfo = {};
-    sendProgress.hide();
   }
 }

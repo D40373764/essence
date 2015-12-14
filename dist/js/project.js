@@ -111,7 +111,7 @@ var LoginBox = React.createClass({
             mini={true}
             classes={'e-background-blue-A200'}
             onClick={this.onLoginClick}
-            tooltipText='Login'
+            tooltipText='Start a chat'
             />
           <BtnItem
             id="callerIdButton"
@@ -120,7 +120,7 @@ var LoginBox = React.createClass({
             mini={true}
             classes={'e-background-blue-A200'}
             onClick={this.getRooms}
-            tooltipText='Show online users'
+            tooltipText='Join a chat'
             />
           <div id="roomlist">
           </div>
@@ -144,14 +144,15 @@ var MessageBox = React.createClass({
     return (
       <div className="box">
         <span className="">
-          <input type="text" id="message" placeholder="Message"></input>
+          <input type="text" id="message" placeholder="Enter message here"></input>
           <BtnItem
             id="sendButton"
             icon='communication-quick-contacts-mail'
             type='fab'
             mini={true}
             classes={'e-background-blue-A200'}
-            onClick={this.onSendMessageClick}/>
+            onClick={this.onSendMessageClick}
+            />
         </span>
         <div id='received' />
       </div>
@@ -180,7 +181,7 @@ var FileBox = React.createClass({
   },
   render: function() {
     return (
-      <div className="box">
+      <div>
         <input type="file" id="files" name="file" />
         <BtnItem
           classes={'raised e-background-blue-A200'}
@@ -227,7 +228,7 @@ var VideoCard = React.createClass({
     return (
       <Card>
         <CardItem>
-          <CardItemContent classes={"e-center"}>
+          <CardItemContent classes={"e-center "}>
             <video className='e-img-rsp' id={this.props.id} autoPlay controls width={this.props.width} height={this.props.height}></video>
           </CardItemContent>
 
